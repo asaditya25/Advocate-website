@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
+const path = require('path');
 require('dotenv').config();
 
 const appointmentRoutes = require('./routes/appointment');
@@ -50,6 +51,19 @@ app.post('/contact', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Error sending email");
+  }
+});
+
+// Serve static files from the React app build
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+// Wildcard route for React Router (after API routes)
+app.get('*', (req, res) => {
+  // Only serve index.html for non-API routes
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  } else {
+    res.status(404).send('API route not found');
   }
 });
 
