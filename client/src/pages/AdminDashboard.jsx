@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axios.get("/api/appointments", {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/appointments`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (Array.isArray(res.data)) {
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     if (!window.confirm("Are you sure you want to delete this appointment?")) return;
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`/api/appointments/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/appointments/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAppointments((prev) => prev.filter((a) => a._id !== id));

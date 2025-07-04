@@ -30,11 +30,14 @@ export default function Contact() {
     setIsSubmitting(true);
     setSubmitMessage("");
     try {
-      const response = await fetch("/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/contact`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       if (response.ok) {
         setSubmitMessage("Thank you! Your message has been sent.");
         setFormData({ name: "", email: "", phone: "", message: "" });
@@ -76,8 +79,8 @@ export default function Contact() {
             <iframe
               title="Google Maps"
               aria-label="Location map of Civil Court Road, Lucknow, UP"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4377.125781418317!2d81.17898017609458!3d26.926235859508008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999606be7521ce3%3A0x4d225c4f03c2d4a8!2sDistrict%20and%20Sessions%20Court!5e1!3m2!1sen!2sin!4v1750576409113!5m2!1sen!2sin" 
-            width="100%"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4377.125781418317!2d81.17898017609458!3d26.926235859508008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999606be7521ce3%3A0x4d225c4f03c2d4a8!2sDistrict%20and%20Sessions%20Court!5e1!3m2!1sen!2sin!4v1750576409113!5m2!1sen!2sin"
+              width="100%"
               height="180"
               style={{ border: 0 }}
               allowFullScreen=""
