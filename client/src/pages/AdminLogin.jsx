@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../utils/axios";
 import { HiEye, HiEyeOff, HiLockClosed, HiMail } from "react-icons/hi";
 
 const AdminLogin = ({ onLogin }) => {
@@ -14,7 +14,7 @@ const AdminLogin = ({ onLogin }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post("/api/appointments/admin/login", { email, password });
+      const res = await axios.post("/appointments/admin/login", { email, password });
       if (res.data.token) {
         localStorage.setItem("adminToken", res.data.token);
         onLogin();
