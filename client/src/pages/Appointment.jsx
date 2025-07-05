@@ -61,7 +61,7 @@ export default function Appointment() {
     setSubmitting(true);
     const formData = { name, email, phone, date, message };
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments`, {
+      const response = await fetch("/api/appointments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

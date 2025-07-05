@@ -54,18 +54,19 @@ app.post('/contact', async (req, res) => {
   }
 });
 
-// Serve static files from the React app build
-app.use(express.static(path.join(__dirname, '../client/build')));
+// Serve static files from the React app build (only in production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')));
 
-// Wildcard route for React Router (after API routes)
-app.get('*', (req, res) => {
-  // Only serve index.html for non-API routes
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-  } else {
-    res.status(404).send('API route not found');
-  }
-});
+  // Wildcard route for React Router (after API routes)
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    } else {
+      res.status(404).send('API route not found');
+    }
+  });
+}
 
 app.listen(5000, () => {
   console.log("Backend running on http://localhost:5000");

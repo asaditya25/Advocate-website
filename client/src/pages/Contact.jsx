@@ -30,14 +30,11 @@ export default function Contact() {
     setIsSubmitting(true);
     setSubmitMessage("");
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/contact`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch("/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
       if (response.ok) {
         setSubmitMessage("Thank you! Your message has been sent.");
         setFormData({ name: "", email: "", phone: "", message: "" });

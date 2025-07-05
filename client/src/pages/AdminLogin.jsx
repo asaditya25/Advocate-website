@@ -14,7 +14,7 @@ const AdminLogin = ({ onLogin }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/appointments/admin/login`, { email, password });
+      const res = await axios.post("/api/appointments/admin/login", { email, password });
       if (res.data.token) {
         localStorage.setItem("adminToken", res.data.token);
         onLogin();
