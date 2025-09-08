@@ -235,7 +235,7 @@ All templates feature:
 
 ## 🙋‍♂️ Author
 
-**Aditya Anand**
+**Aditya Singh**
 - [GitHub](https://github.com/asaditya25)
 - [LinkedIn](https://linkedin.com/in/adii25)
 
