@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "../utils/axios";
+import axios from "axios";
 import { HiEye, HiEyeOff, HiLockClosed, HiMail } from "react-icons/hi";
 
 const AdminLogin = ({ onLogin }) => {
@@ -14,7 +14,7 @@ const AdminLogin = ({ onLogin }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post("/appointments/admin/login", { email, password });
+      const res = await axios.post("/api/admin/login", { email, password });
       if (res.data.token) {
         localStorage.setItem("adminToken", res.data.token);
         onLogin();
@@ -22,7 +22,14 @@ const AdminLogin = ({ onLogin }) => {
         setError("Invalid response from server");
       }
     } catch (err) {
-      setError("Invalid email or password");
+      console.error('Login error:', err);
+      if (err.response?.status === 429) {
+        setError("Too many login attempts. Please try again later.");
+      } else if (err.response?.status === 401) {
+        setError("Invalid email or password");
+      } else {
+        setError("Login failed. Please try again.");
+      }
     }
     setLoading(false);
   };

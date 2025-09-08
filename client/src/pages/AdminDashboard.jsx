@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../utils/axios";
+import axios from "axios";
 import AdminLogin from "./AdminLogin";
 import { HiOutlineLogout, HiOutlineUser, HiOutlineMail, HiOutlinePhone, HiOutlineCalendar, HiOutlineDocumentText, HiTrash } from "react-icons/hi";
 
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axios.get("/appointments", {
+      const res = await axios.get("/api/appointments", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (Array.isArray(res.data)) {
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     if (!window.confirm("Are you sure you want to delete this appointment?")) return;
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`/appointments/${id}`, {
+      await axios.delete(`/api/appointments/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAppointments((prev) => prev.filter((a) => a._id !== id));

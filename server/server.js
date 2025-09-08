@@ -1,45 +1,51 @@
-
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
-const connectDB = require('./config/db');
 const path = require('path');
 require('dotenv').config();
 
-
-
 const appointmentRoutes = require('./routes/appointment');
 const contactRoutes = require('./routes/contact');
-const rateLimit = require('./middleware/rateLimit');
+const adminRoutes = require('./routes/admin');
 
-
+// Import middleware
+const errorHandler = require('./middleware/errorHandler');
+const logger = require('./middleware/logger');
+const { generalLimiter } = require('./middleware/rateLimit');
 
 const app = express();
-const logger = require('./middleware/logger');
+
+// Apply middleware
 app.use(logger);
-app.use(helmet());
+app.use(generalLimiter);
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
-connectDB();
+// MongoDB connection with detailed error handling
+(async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('MongoDB connected');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
+    if (err.name === 'MongooseServerSelectionError') {
+      console.error('➡️  Check your IP whitelist and network access settings in MongoDB Atlas.');
+    }
+    process.exit(1);
+  }
+})();
 
+// API routes
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/admin', adminRoutes);
 
-
-// Rate limit sensitive endpoints
-app.use('/api/appointments', rateLimit, appointmentRoutes);
-app.use('/api/contact', rateLimit, contactRoutes);
-
-
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 // Serve static files from the React app build
 app.use(express.static(path.join(__dirname, '../client/build')));
-
-// Error handling middleware (should be after all routes)
-const errorHandler = require('./middleware/errorHandler');
-app.use(errorHandler);
 
 // Catch-all route: send index.html for any non-API requests (client-side routing)
 app.get('*', (req, res) => {

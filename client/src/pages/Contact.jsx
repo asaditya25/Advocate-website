@@ -31,20 +31,24 @@ export default function Contact() {
     setIsSubmitting(true);
     setSubmitMessage("");
     try {
-      const response = await fetch("/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      
+      const responseData = await response.json();
+      
       if (response.ok) {
         setSubmitMessage("Thank you! Your message has been sent.");
         setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
         setSubmitMessage(
-          "Sorry, there was an error sending your message. Please try again."
+          responseData.error || "Sorry, there was an error sending your message. Please try again."
         );
       }
     } catch (error) {
+      console.error('Contact form error:', error);
       setSubmitMessage(
         "Sorry, there was an error sending your message. Please try again."
       );
