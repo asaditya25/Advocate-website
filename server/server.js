@@ -41,11 +41,19 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Error handling middleware (must be last)
-app.use(errorHandler);
-
-// Serve static files from the React app build
-app.use(express.static(path.join(__dirname, '../client/build')));
+// Serve static files from the React app build with proper MIME types
+app.use(express.static(path.join(__dirname, '../client/build'), {
+  setHeaders: (res, filePath) => {
+    console.log(`Serving static file: ${filePath}`);
+    if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (filePath.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html');
+    }
+  }
+}));
 
 // Catch-all route: send index.html for any non-API requests (client-side routing)
 app.get('*', (req, res) => {
@@ -55,6 +63,9 @@ app.get('*', (req, res) => {
     res.status(404).send('API route not found');
   }
 });
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 app.listen(5000, () => {
   console.log("Backend running on http://localhost:5000");
