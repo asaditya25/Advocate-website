@@ -48,9 +48,71 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Debug endpoint to check build files
+app.get('/api/debug/files', (req, res) => {
+  const fs = require('fs');
+  const buildPath = path.join(__dirname, '../client/build');
+  
+  try {
+    const result = {
+      buildPath,
+      buildExists: fs.existsSync(buildPath),
+      files: {}
+    };
+    
+    if (result.buildExists) {
+      // Check static directory
+      const staticPath = path.join(buildPath, 'static');
+      result.files.staticExists = fs.existsSync(staticPath);
+      
+      if (result.files.staticExists) {
+        const jsPath = path.join(staticPath, 'js');
+        const cssPath = path.join(staticPath, 'css');
+        
+        result.files.jsFiles = fs.existsSync(jsPath) ? fs.readdirSync(jsPath) : [];
+        result.files.cssFiles = fs.existsSync(cssPath) ? fs.readdirSync(cssPath) : [];
+      }
+    }
+    
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Serve static files from React build
 const buildPath = path.join(__dirname, '../client/build');
 console.log('📁 Build path:', buildPath);
+
+// Debug: Check if build directory exists and list files
+const fs = require('fs');
+try {
+  const buildExists = fs.existsSync(buildPath);
+  console.log('📁 Build directory exists:', buildExists);
+  
+  if (buildExists) {
+    const staticPath = path.join(buildPath, 'static');
+    if (fs.existsSync(staticPath)) {
+      console.log('📁 Static directory exists');
+      const jsPath = path.join(staticPath, 'js');
+      const cssPath = path.join(staticPath, 'css');
+      
+      if (fs.existsSync(jsPath)) {
+        const jsFiles = fs.readdirSync(jsPath);
+        console.log('📄 JS files available:', jsFiles);
+      }
+      
+      if (fs.existsSync(cssPath)) {
+        const cssFiles = fs.readdirSync(cssPath);
+        console.log('🎨 CSS files available:', cssFiles);
+      }
+    } else {
+      console.log('❌ Static directory not found');
+    }
+  }
+} catch (err) {
+  console.error('❌ Error checking build files:', err);
+}
 
 // Serve static files with proper MIME types
 app.use(express.static(buildPath, {
