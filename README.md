@@ -34,11 +34,8 @@ advocate-website/
 │   │   └── emailTemplates.js # Modern HTML templates
 │   └── server.js            # Main server file
 ├── .gitignore
-├── package.json
-├── README.md
-├── CLEANED_PROJECT_STRUCTURE.md
-├── ERROR_FIXES_REPORT.md
-└── EMAIL_SERVICE_DOCUMENTATION.md
+├── package.json              # Root package.json for deployment
+└── README.md
 ```
 
 ---
@@ -124,21 +121,23 @@ Create a `.env` file in the `/server` folder:
 
 ```env
 PORT=5000
-MONGODB_URI=your_mongodb_connection_string
+MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_here
 EMAIL=your_gmail@gmail.com
 PASSWORD=your_gmail_app_password
 ```
 
-### 4. Run the project
+### 4. MongoDB Atlas Setup
 
-**Option 1: Quick Start (Windows)**
-```bash
-# Use the convenient batch file
-start-dev.bat
-```
+1. Create a MongoDB Atlas account
+2. Create a new cluster
+3. Add your IP to the whitelist (or use 0.0.0.0/0 for all IPs)
+4. Create a database user
+5. Get your connection string and add it to `.env`
 
-**Option 2: Manual Start**
+### 5. Run the project
+
+**Option 1: Development Mode**
 ```bash
 # Terminal 1 - Start server
 cd server
@@ -149,10 +148,44 @@ cd client
 npm start
 ```
 
-### 5. Access the application
+**Option 2: Production Build & Test**
+```bash
+# Build and start for deployment testing
+npm run render-postbuild
+npm start
+```
+
+### 6. Access the application
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5000
 - **Admin Dashboard**: http://localhost:3000/admin
+
+---
+
+## 🚀 Deployment on Render
+
+### Quick Deploy Steps:
+
+1. **Push to GitHub**: Ensure your code is committed and pushed
+2. **Connect to Render**: 
+   - Go to [render.com](https://render.com)
+   - Connect your GitHub repository
+3. **Configure Build Settings**:
+   - **Build Command**: `npm run render-postbuild`
+   - **Start Command**: `npm start`
+   - **Root Directory**: Leave empty or use `/`
+4. **Set Environment Variables** in Render dashboard:
+   ```
+   NODE_ENV=production
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret_here
+   EMAIL=your_gmail@gmail.com
+   PASSWORD=your_gmail_app_password
+   ```
+5. **Deploy**: Click deploy and your app will be live!
+
+### Auto-Deploy:
+Enable auto-deploy from your main branch for continuous deployment.
 
 ---
 
@@ -227,9 +260,7 @@ All templates feature:
 
 ## 📄 Documentation
 
-- [Email Service Documentation](server/EMAIL_SERVICE_DOCUMENTATION.md)
-- [Project Structure Report](CLEANED_PROJECT_STRUCTURE.md)
-- [Error Fixes Report](ERROR_FIXES_REPORT.md)
+This README contains all necessary information for setup and deployment.
 
 ---
 

@@ -22,14 +22,16 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB connection
+// MongoDB connection with detailed error handling
 (async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
-    await mongoose.connect(mongoUri);
-    console.log('✅ MongoDB connected successfully');
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('MongoDB connected');
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
+    if (err.name === 'MongooseServerSelectionError') {
+      console.error('➡️  Check your IP whitelist and network access settings in MongoDB Atlas.');
+    }
     process.exit(1);
   }
 })();
@@ -39,18 +41,10 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production'
-  });
-});
-
-// Serve static files from React build
+// Serve static files from the React app build with proper MIME types
 app.use(express.static(path.join(__dirname, '../client/build'), {
   setHeaders: (res, filePath) => {
+    console.log(`Serving static file: ${filePath}`);
     if (filePath.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
     } else if (filePath.endsWith('.css')) {
@@ -61,20 +55,18 @@ app.use(express.static(path.join(__dirname, '../client/build'), {
   }
 }));
 
-// Catch-all handler for React Router
+// Catch-all route: send index.html for any non-API requests (client-side routing)
 app.get('*', (req, res) => {
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ error: 'API endpoint not found' });
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+  } else {
+    res.status(404).send('API route not found');
   }
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'production'}`);
+app.listen(5000, () => {
+  console.log("Backend running on http://localhost:5000");
 });
